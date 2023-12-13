@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:submission01flutter/data/restaurant.dart';
@@ -38,6 +39,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeState extends State<HomeScreen> {
   double rating = 3.5;
   bool isLoaded = false;
+  List<Restaurant> restaurantItems = [];
+  List<Restaurant>? restaurant = [];
+  var items =<Restaurant>[];
+  final controller = TextEditingController();
 
   @override
   void initState() {
@@ -48,9 +53,28 @@ class _HomeState extends State<HomeScreen> {
       });
     });
   }
-
+  void filterSearchResults(String query) {
+    items.clear();
+    setState(() {
+      for(int i = 0; i < restaurant!.length; i++){
+        if( restaurant![i].name.contains(query.toLowerCase())){
+          items.add(restaurant![i]);
+        }
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    List<Restaurant> restaurantFilterItems = [];
+    if (controller.text.isNotEmpty) {
+      restaurantFilterItems = restaurantItems
+          .where((element) => element.name
+          .toLowerCase()
+          .contains(controller.text.toLowerCase()))
+          .toList();
+    } else {
+      restaurantFilterItems = restaurantItems;
+    }
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -75,13 +99,31 @@ class _HomeState extends State<HomeScreen> {
               ),
             ),
             body: Container(
+              child: Column(
+                  children: <Widget>[
+              Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) {
+                  filterSearchResults(value);
+                },
+                controller: controller,
+                decoration: InputDecoration(
+                    labelText: "Search",
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              ),
+            ),
+              Expanded(
               child: FutureBuilder<String>(
                   future: DefaultAssetBundle.of(context)
                       .loadString('assets/data/local_restaurant.json'),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      final List<Restaurant> restaurant =
-                          parseRestaurants(snapshot.data);
+                    final List<Restaurant> restaurant = controller.text.isNotEmpty?
+                    items : parseRestaurants(snapshot.data);
                       return ListView.separated(
                         shrinkWrap: true,
                         separatorBuilder: (context, index) => Divider(),
@@ -108,7 +150,7 @@ class _HomeState extends State<HomeScreen> {
                       return _buildLoadingWidget();
                     }
                   }),
-            )));
+            )]))));
   }
 
   Widget _buildRestaurantItem(BuildContext context, Restaurant restaurant) {
