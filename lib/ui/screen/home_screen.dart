@@ -90,7 +90,7 @@ class _HomeState extends State<HomeScreen> {
                             color: Colors.white60,
                             elevation: 8,
                             child: Column(children: [
-                              if ((restaurant[index].pictureId ?? "").isEmpty)
+                              if ((restaurant[index].pictureId).isEmpty)
                                 _buildErrorImage()
                               else
                                 isLoaded
