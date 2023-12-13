@@ -157,7 +157,7 @@ class DetailScreen extends StatelessWidget {
                         color: Colors.blueAccent,
                         padding: EdgeInsets.all(8),
                         margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                        height: displayHeight(context) * 0.05,
+                        height: displayHeight(context) * 0.085,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
