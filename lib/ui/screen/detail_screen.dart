@@ -59,12 +59,12 @@ class DetailScreen extends StatelessWidget {
                     Row(
                       children: [
                         Center(
-                         child: Icon(
+                          child: Icon(
                             Icons.location_on_outlined,
                             color: Colors.orange,
                           ),
                         ),
-                          SizedBox(width: displayWidth(context) * 0.008),
+                        SizedBox(width: displayWidth(context) * 0.008),
                         Center(
                           child: Text(
                             restaurant.city,
@@ -73,7 +73,6 @@ class DetailScreen extends StatelessWidget {
                                 color: Colors.orange),
                           ),
                         ),
-
                         Padding(padding: EdgeInsets.symmetric(horizontal: 5.0)),
                         Text(
                           '|',
@@ -106,7 +105,7 @@ class DetailScreen extends StatelessWidget {
                               style: TextStyle(
                                   color: Colors.blue,
                                   fontWeight: FontWeight.bold,
-                                  fontSize:displayWidth(context) * 0.05 ),
+                                  fontSize: displayWidth(context) * 0.05),
                             ),
                           ],
                         )
@@ -119,6 +118,8 @@ class DetailScreen extends StatelessWidget {
                     Padding(padding: EdgeInsets.all(3)),
                     Text(
                       'Deskripsi',
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           color: Colors.deepOrange,
                           fontSize: displayWidth(context) * 0.05,
@@ -142,7 +143,7 @@ class DetailScreen extends StatelessWidget {
                     Container(
                       alignment: Alignment.center,
                       child: Text(
-                        'Menu Makanan dan Minuman',
+                        'Menus',
                         style: TextStyle(
                             color: Colors.deepOrange,
                             fontSize: displayWidth(context) * 0.06,
@@ -151,55 +152,93 @@ class DetailScreen extends StatelessWidget {
                       ),
                     ),
                     Padding(padding: EdgeInsets.all(5)),
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: restaurant.menus.foods.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Card(
-                                  color: Colors.orange,
-                                  elevation: 4,
-                                  margin: EdgeInsets.all(8),
-                                  child: Column(children: [
-                                    Text(
+                    Column(children: [
+                      Container(
+                        color: Colors.blueAccent,
+                        padding: EdgeInsets.all(8),
+                        margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        height: displayHeight(context) * 0.05,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                                child: Text("Menu Makanan",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: displayWidth(context) * 0.05,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Helvetica'))),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5.0)),
+                            Text(
+                              '|',
+                              style: TextStyle(
+                                  fontSize: displayWidth(context) * 0.06,
+                                  color: Colors.white),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 3.0)),
+                            Expanded(
+                                child: Text("Menu Minuman",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: displayWidth(context) * 0.05,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Helvetica')))
+                          ],
+                        ),
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: restaurant.menus.foods.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Card(
+                                    color: Colors.orange,
+                                    elevation: 4,
+                                    margin: EdgeInsets.all(8),
+                                    child: Column(children: [
+                                      Text(
+                                          '- ' +
+                                              restaurant
+                                                  .menus.foods[index].name,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                displayWidth(context) * 0.05,
+                                          )),
+                                    ]));
+                              },
+                            )),
+                            Expanded(
+                                child: ListView.builder(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              shrinkWrap: true,
+                              itemCount: restaurant.menus.drinks.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Card(
+                                    color: Colors.deepOrange,
+                                    elevation: 4,
+                                    margin: EdgeInsets.all(8),
+                                    child: Column(children: [
+                                      Text(
                                         '- ' +
-                                            restaurant.menus.foods[index].name,
+                                            restaurant.menus.drinks[index].name,
                                         style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize:
-                                              displayWidth(context) * 0.05,
-                                        )),
-                                  ]));
-                            },
-                          )),
-                          Expanded(
-                              child: ListView.builder(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            shrinkWrap: true,
-                            itemCount: restaurant.menus.drinks.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Card(
-                                  color: Colors.deepOrange,
-                                  elevation: 4,
-                                  margin: EdgeInsets.all(8),
-                                  child: Column(children: [
-                                    Text(
-                                      '- ' +
-                                          restaurant.menus.drinks[index].name,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize:
-                                              displayWidth(context) * 0.05,
-                                          fontWeight: FontWeight.normal),
-                                    )
-                                  ]));
-                            },
-                          )),
-                        ])
+                                            color: Colors.white,
+                                            fontSize:
+                                                displayWidth(context) * 0.05,
+                                            fontWeight: FontWeight.normal),
+                                      )
+                                    ]));
+                              },
+                            )),
+                          ])
+                    ])
                   ]))
         ])));
   }

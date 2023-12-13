@@ -80,7 +80,8 @@ class _HomeState extends State<HomeScreen> {
                       .loadString('assets/data/local_restaurant.json'),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      final List<Restaurant> restaurant = parseRestaurants(snapshot.data);
+                      final List<Restaurant> restaurant =
+                          parseRestaurants(snapshot.data);
                       return ListView.separated(
                         shrinkWrap: true,
                         separatorBuilder: (context, index) => Divider(),
@@ -94,13 +95,14 @@ class _HomeState extends State<HomeScreen> {
                                 _buildErrorImage()
                               else
                                 isLoaded
-                                    ? _buildRestaurantItem(context, restaurant[index])
+                                    ? _buildRestaurantItem(
+                                        context, restaurant[index])
                                     : getShimmerLoading(),
                             ]),
                           );
                         },
                       );
-                  } else if (snapshot.hasError) {
+                    } else if (snapshot.hasError) {
                       return _buildErrorWidget(snapshot.error as String);
                     } else {
                       return _buildLoadingWidget();
@@ -188,6 +190,7 @@ class _HomeState extends State<HomeScreen> {
       },
     );
   }
+
   Widget _buildErrorWidget(String error) {
     return Center(
       child: Text("Error: $error"),

@@ -7,6 +7,6 @@ class Drink {
       Drink(name: json["name"]);
 
   Map<String, dynamic> toJson() => {
-    "name": name,
-  };
+        "name": name,
+      };
 }
