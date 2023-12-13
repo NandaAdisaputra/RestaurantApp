@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:submission01flutter/ui/screen/home_screen.dart';
+import 'package:submission01flutter/main.dart';
 
 import '../../helper/sizes_helpers.dart';
 

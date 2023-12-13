@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:submission01flutter/data/restaurant.dart';
 import 'package:submission01flutter/helper/sizes_helpers.dart';
+import 'package:submission01flutter/ui/screen/detail_screen.dart';
 import 'package:submission01flutter/ui/screen/splash_screen.dart';
-import 'detail_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Restaurant App',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/splashscreen',
+      initialRoute: '/',
       routes: {
-        '/splashscreen': (context) => SplashScreen(),
+        '/': (context) => SplashScreen(),
         '/home': (context) => HomeScreen(),
         '/detail': (context) => DetailScreen(
               restaurant:
@@ -41,7 +41,7 @@ class _HomeState extends State<HomeScreen> {
   bool isLoaded = false;
   List<Restaurant> restaurantItems = [];
   List<Restaurant>? restaurant = [];
-  var items =<Restaurant>[];
+  var items = <Restaurant>[];
   final controller = TextEditingController();
 
   @override
@@ -53,24 +53,26 @@ class _HomeState extends State<HomeScreen> {
       });
     });
   }
+
   void filterSearchResults(String query) {
     items.clear();
     setState(() {
-      for(int i = 0; i < restaurant!.length; i++){
-        if( restaurant![i].name.contains(query.toLowerCase())){
+      for (int i = 0; i < restaurant!.length; i++) {
+        if (restaurant![i].name.contains(query.toLowerCase())) {
           items.add(restaurant![i]);
         }
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     List<Restaurant> restaurantFilterItems = [];
     if (controller.text.isNotEmpty) {
       restaurantFilterItems = restaurantItems
           .where((element) => element.name
-          .toLowerCase()
-          .contains(controller.text.toLowerCase()))
+              .toLowerCase()
+              .contains(controller.text.toLowerCase()))
           .toList();
     } else {
       restaurantFilterItems = restaurantItems;
@@ -99,58 +101,61 @@ class _HomeState extends State<HomeScreen> {
               ),
             ),
             body: Container(
-              child: Column(
-                  children: <Widget>[
+                child: Column(children: <Widget>[
               Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                onChanged: (value) {
-                  filterSearchResults(value);
-                },
-                controller: controller,
-                decoration: InputDecoration(
-                    labelText: "Search",
-                    hintText: "Search",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {
+                    filterSearchResults(value);
+                  },
+                  controller: controller,
+                  decoration: InputDecoration(
+                      labelText: "Search",
+                      hintText: "Search",
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(25.0)))),
+                ),
               ),
-            ),
               Expanded(
-              child: FutureBuilder<String>(
-                  future: DefaultAssetBundle.of(context)
-                      .loadString('assets/data/local_restaurant.json'),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                    final List<Restaurant> restaurant = controller.text.isNotEmpty?
-                    items : parseRestaurants(snapshot.data);
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        separatorBuilder: (context, index) => Divider(),
-                        itemCount: restaurant.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.white60,
-                            elevation: 8,
-                            child: Column(children: [
-                              if ((restaurant[index].pictureId).isEmpty)
-                                _buildErrorImage()
-                              else
-                                isLoaded
-                                    ? _buildRestaurantItem(
-                                        context, restaurant[index])
-                                    : getShimmerLoading(),
-                            ]),
-                          );
-                        },
-                      );
-                    } else if (snapshot.hasError) {
-                      return _buildErrorWidget(snapshot.error as String);
-                    } else {
-                      return _buildLoadingWidget();
-                    }
-                  }),
-            )]))));
+                child: FutureBuilder<String>(
+                    future: DefaultAssetBundle.of(context)
+                        .loadString('assets/data/local_restaurant.json'),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final List<Restaurant> restaurant =
+                            controller.text.isNotEmpty
+                                ? items
+                                : parseRestaurants(snapshot.data);
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          separatorBuilder: (context, index) => Divider(),
+                          itemCount: restaurant.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.white60,
+                              elevation: 8,
+                              child: Column(children: [
+                                if ((restaurant[index].pictureId).isEmpty)
+                                  _buildErrorImage()
+                                else
+                                  isLoaded
+                                      ? _buildRestaurantItem(
+                                          context, restaurant[index])
+                                      : getShimmerLoading(),
+                              ]),
+                            );
+                          },
+                        );
+                      } else if (snapshot.hasError) {
+                        return _buildErrorWidget(snapshot.error as String);
+                      } else {
+                        return _buildLoadingWidget();
+                      }
+                    }),
+              )
+            ]))));
   }
 
   Widget _buildRestaurantItem(BuildContext context, Restaurant restaurant) {

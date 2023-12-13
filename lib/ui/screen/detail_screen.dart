@@ -4,7 +4,7 @@ import 'package:submission01flutter/data/restaurant.dart';
 import 'package:submission01flutter/helper/sizes_helpers.dart';
 
 class DetailScreen extends StatelessWidget {
-  static const routeName = '/detail_page';
+  static const routeName = '/detail';
 
   final Restaurant restaurant;
 
