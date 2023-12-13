@@ -21,13 +21,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splashscreen': (context) => SplashScreen(),
         '/home': (context) => HomeScreen(),
-        '/detail': (context) =>
-            DetailScreen(
+        '/detail': (context) => DetailScreen(
               restaurant:
-              ModalRoute
-                  .of(context)
-                  ?.settings
-                  .arguments as Restaurant,
+                  ModalRoute.of(context)?.settings.arguments as Restaurant,
             )
       },
     );
@@ -57,94 +53,74 @@ class _HomeState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-              title: Text('Home Page'),
-              backgroundColor: Colors.deepOrange,
-              foregroundColor: Colors.white,
-              elevation: 4,
-              leading: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Image.asset('assets/images/sendok_garpu.png'))),
-          endDrawer: Drawer(
-            child: SafeArea(
-              child: Column(
-                children: const <Widget>[
-                  MenuTile(title: 'Home'),
-                  MenuTile(title: 'Tentang Kami'),
-                  MenuTile(title: 'Menu'),
-                  MenuTile(title: 'Delivery Order'),
-                  MenuTile(title: 'Hubungi Kami'),
-                ],
+            appBar: AppBar(
+                title: Text('Home Page'),
+                backgroundColor: Colors.deepOrange,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                leading: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Image.asset('assets/images/sendok_garpu.png'))),
+            endDrawer: Drawer(
+              child: SafeArea(
+                child: Column(
+                  children: const <Widget>[
+                    MenuTile(title: 'Home'),
+                    MenuTile(title: 'Tentang Kami'),
+                    MenuTile(title: 'Menu'),
+                    MenuTile(title: 'Delivery Order'),
+                    MenuTile(title: 'Hubungi Kami'),
+                  ],
+                ),
               ),
             ),
-          ),
-          body: Container(
-            child: FutureBuilder<String>(
-                future: DefaultAssetBundle.of(context)
-                    .loadString('assets/data/local_restaurant.json'),
-                builder: (context, snapshot) {
-                  final List<Restaurant> restaurant =
-                  parseRestaurants(snapshot.data);
-                  if (snapshot.hasData) {
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      separatorBuilder: (context, index) => Divider(),
-                      itemCount: restaurant.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.white60,
-                          elevation: 8,
-                          child: Column(children: [
-                            isLoaded
-                                ? _buildRestaurantItem(
-                                context, restaurant[index])
-                                : getShimmerLoading(),
-                          ]),
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                }),
-          ),
-        ));
+            body: Container(
+              child: FutureBuilder<String>(
+                  future: DefaultAssetBundle.of(context)
+                      .loadString('assets/data/local_restaurant.json'),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final List<Restaurant> restaurant = parseRestaurants(snapshot.data);
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        separatorBuilder: (context, index) => Divider(),
+                        itemCount: restaurant.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.white60,
+                            elevation: 8,
+                            child: Column(children: [
+                              if ((restaurant[index].pictureId ?? "").isEmpty)
+                                _buildErrorImage()
+                              else
+                                isLoaded
+                                    ? _buildRestaurantItem(context, restaurant[index])
+                                    : getShimmerLoading(),
+                            ]),
+                          );
+                        },
+                      );
+                  } else if (snapshot.hasError) {
+                      return _buildErrorWidget(snapshot.error as String);
+                    } else {
+                      return _buildLoadingWidget();
+                    }
+                  }),
+            )));
   }
 
   Widget _buildRestaurantItem(BuildContext context, Restaurant restaurant) {
     return ListTile(
       contentPadding:
-      const EdgeInsets.fromLTRB(8, 2, 8, 2),
+          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       leading: Hero(
         tag: restaurant.pictureId,
-          child: Container(
-            width: displayWidth(context)  * 0.2,
-            child: AspectRatio(
-                aspectRatio: 1/1,
-                child: Container(
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(200.0),
-                        boxShadow:[
-                          BoxShadow(
-                              color: Color.fromARGB(60, 0, 0, 0),
-                              blurRadius: 8.0,
-                              offset: Offset(5.0, 5.0)
-                          )
-                        ],
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: Image.network(restaurant.pictureId,width:  displayWidth(context)  * 0.8,height: displayHeight(context) * 0.8).image
-                        )
-                    )
-                )
-            ),
-          )
+        child: Image.network(
+          restaurant.pictureId,
+          fit: BoxFit.fitHeight,
+          width: displayWidth(context) * 0.2,
+        ),
       ),
-
-
       subtitle: Column(
         children: [
           Row(
@@ -169,30 +145,29 @@ class _HomeState extends State<HomeScreen> {
               Text(
                 restaurant.city,
                 style: TextStyle(
-                    fontSize: displayWidth(context) * 0.03,
+                    fontSize: displayWidth(context) * 0.04,
                     color: Colors.orange),
               )
             ],
           ),
-          SizedBox(height:12),
+          SizedBox(height: 12),
           Row(
             children: [
               RatingBar.builder(
+                ignoreGestures: true,
                 itemSize: displayWidth(context) * 0.05,
                 initialRating: restaurant.rating,
+                glowColor: Colors.transparent,
                 minRating: 1,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
                 itemCount: 5,
                 itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) =>
-                    Icon(
-                      Icons.star,
-                      color: Colors.blue,
-                    ),
-                onRatingUpdate: (rating) {
-                  print(rating);
-                },
+                itemBuilder: (context, _) => Icon(
+                  Icons.star,
+                  color: Colors.blue,
+                ),
+                onRatingUpdate: (rating) {},
               ),
               SizedBox(width: 50),
               Row(
@@ -213,49 +188,89 @@ class _HomeState extends State<HomeScreen> {
       },
     );
   }
-}
+  Widget _buildErrorWidget(String error) {
+    return Center(
+      child: Text("Error: $error"),
+    );
+  }
 
-Shimmer getShimmerLoading() {
-  return Shimmer.fromColors(
-    baseColor: Colors.grey[300]!,
-    highlightColor: Colors.grey[100]!,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildLoadingWidget() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height / 1.5,
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget _buildErrorImage() {
+    return Stack(
       children: [
         Container(
-          height: 100,
-          width: 100,
-          color: Colors.white,
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                height: 18.0,
-                color: Colors.white,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                height: 14.0,
-                color: Colors.white,
-              ),
-            ],
+          width: 80.0,
+          height: 120.0,
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1),
+            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+            shape: BoxShape.rectangle,
           ),
-        )
+        ),
+        const Positioned(
+          bottom: 0.0,
+          top: 0.0,
+          left: 0.0,
+          right: 0.0,
+          child: Icon(
+            Icons.broken_image_rounded,
+            color: Colors.red,
+          ),
+        ),
       ],
-    ),
-  );
+    );
+  }
+
+  Shimmer getShimmerLoading() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 100,
+            width: 100,
+            color: Colors.white,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 18.0,
+                  color: Colors.white,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 14.0,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
 
 class MenuTile extends StatelessWidget {
@@ -271,8 +286,7 @@ class MenuTile extends StatelessWidget {
     return ListTile(
       title: Text(
         title,
-        style: Theme
-            .of(context)
+        style: Theme.of(context)
             .textTheme
             .bodyLarge!
             .copyWith(fontWeight: FontWeight.bold),
