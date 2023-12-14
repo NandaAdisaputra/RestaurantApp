@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:submission01flutter/main.dart';
-
 import '../../helper/sizes_helpers.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -37,10 +36,12 @@ class _SplashScreenState extends State<SplashScreen>
           onLoaded: (composition) {
             _controller
               ..duration = composition.duration
-              ..forward().whenComplete(() => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  ));
+              ..forward().whenComplete(
+                () => Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                ),
+              );
           },
         ),
       ),

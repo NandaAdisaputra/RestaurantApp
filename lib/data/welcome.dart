@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:submission01flutter/data/restaurant.dart';
 
 class Welcome {

@@ -16,18 +16,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Restaurant App',
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/home': (context) => HomeScreen(),
-        '/detail': (context) => DetailScreen(
-              restaurant:
-                  ModalRoute.of(context)?.settings.arguments as Restaurant,
-            )
-      },
-    );
+        title: 'Restaurant App',
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        routes: {
+          '/': (context) => SplashScreen(),
+          '/home': (context) => HomeScreen(),
+          '/detail': (context) => DetailScreen(
+                restaurant:
+                    ModalRoute.of(context)?.settings.arguments as Restaurant,
+              ),
+        });
   }
 }
 
@@ -45,6 +44,12 @@ class _HomeState extends State<HomeScreen> {
   final controller = TextEditingController();
 
   @override
+  dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 3000), () {
@@ -58,7 +63,7 @@ class _HomeState extends State<HomeScreen> {
     items.clear();
     setState(() {
       for (int i = 0; i < restaurant!.length; i++) {
-        if (restaurant![i].name.contains(query.toLowerCase())) {
+        if (restaurant![i].name.toLowerCase().contains(query.toLowerCase())) {
           items.add(restaurant![i]);
         }
       }
@@ -67,41 +72,41 @@ class _HomeState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Restaurant> restaurantFilterItems = [];
     if (controller.text.isNotEmpty) {
-      restaurantFilterItems = restaurantItems
+      restaurantItems
           .where((element) => element.name
               .toLowerCase()
               .contains(controller.text.toLowerCase()))
           .toList();
     } else {
-      restaurantFilterItems = restaurantItems;
+      restaurantItems;
     }
     return SafeArea(
-        child: Scaffold(
-            appBar: AppBar(
-                title: Text('Home Page'),
-                backgroundColor: Colors.deepOrange,
-                foregroundColor: Colors.white,
-                elevation: 4,
-                leading: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Image.asset('assets/images/sendok_garpu.png'))),
-            endDrawer: Drawer(
-              child: SafeArea(
-                child: Column(
-                  children: const <Widget>[
-                    MenuTile(title: 'Home'),
-                    MenuTile(title: 'Tentang Kami'),
-                    MenuTile(title: 'Menu'),
-                    MenuTile(title: 'Delivery Order'),
-                    MenuTile(title: 'Hubungi Kami'),
-                  ],
-                ),
-              ),
+      child: Scaffold(
+        appBar: AppBar(
+            title: Text('Home Page'),
+            backgroundColor: Colors.deepOrange,
+            foregroundColor: Colors.white,
+            elevation: 4,
+            leading: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Image.asset('assets/images/sendok_garpu.png'))),
+        endDrawer: Drawer(
+          child: SafeArea(
+            child: Column(
+              children: const <Widget>[
+                MenuTile(title: 'Home'),
+                MenuTile(title: 'Tentang Kami'),
+                MenuTile(title: 'Menu'),
+                MenuTile(title: 'Delivery Order'),
+                MenuTile(title: 'Hubungi Kami'),
+              ],
             ),
-            body: Container(
-                child: Column(children: <Widget>[
+          ),
+        ),
+        body: Container(
+          child: Column(
+            children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
@@ -124,27 +129,28 @@ class _HomeState extends State<HomeScreen> {
                         .loadString('assets/data/local_restaurant.json'),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        final List<Restaurant> restaurant =
-                            controller.text.isNotEmpty
-                                ? items
-                                : parseRestaurants(snapshot.data);
+                        restaurant = controller.text.isNotEmpty
+                            ? List.from(items)
+                            : parseRestaurants(snapshot.data);
                         return ListView.separated(
                           shrinkWrap: true,
                           separatorBuilder: (context, index) => Divider(),
-                          itemCount: restaurant.length,
+                          itemCount: restaurant!.length,
                           itemBuilder: (context, index) {
                             return Card(
                               color: Colors.white60,
                               elevation: 8,
-                              child: Column(children: [
-                                if ((restaurant[index].pictureId).isEmpty)
-                                  _buildErrorImage()
-                                else
-                                  isLoaded
-                                      ? _buildRestaurantItem(
-                                          context, restaurant[index])
-                                      : getShimmerLoading(),
-                              ]),
+                              child: Column(
+                                children: [
+                                  if ((restaurant?[index].pictureId)!.isEmpty)
+                                    _buildErrorImage()
+                                  else
+                                    isLoaded
+                                        ? _buildRestaurantItem(
+                                            context, restaurant![index])
+                                        : getShimmerLoading(),
+                                ],
+                              ),
                             );
                           },
                         );
@@ -154,8 +160,12 @@ class _HomeState extends State<HomeScreen> {
                         return _buildLoadingWidget();
                       }
                     }),
-              )
-            ]))));
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildRestaurantItem(BuildContext context, Restaurant restaurant) {
@@ -181,7 +191,7 @@ class _HomeState extends State<HomeScreen> {
                     fontSize: displayWidth(context) * 0.05,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Helvetica'),
-              )
+              ),
             ],
           ),
           Row(
@@ -196,7 +206,7 @@ class _HomeState extends State<HomeScreen> {
                 style: TextStyle(
                     fontSize: displayWidth(context) * 0.04,
                     color: Colors.orange),
-              )
+              ),
             ],
           ),
           SizedBox(height: 12),
@@ -227,7 +237,7 @@ class _HomeState extends State<HomeScreen> {
                         color: Colors.blue, fontWeight: FontWeight.bold),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ],
@@ -316,7 +326,7 @@ class _HomeState extends State<HomeScreen> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
