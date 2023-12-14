@@ -14,18 +14,20 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('Detail Restaurant'),
-            backgroundColor: Colors.deepOrange,
-            foregroundColor: Colors.white,
-            elevation: 4,
-            leading: Padding(
-                padding: const EdgeInsets.all(12),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ))),
+          title: Text('Detail Restaurant'),
+          backgroundColor: Colors.deepOrange,
+          foregroundColor: Colors.white,
+          elevation: 4,
+          leading: Padding(
+            padding: const EdgeInsets.all(12),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
         endDrawer: Drawer(
           child: SafeArea(
             child: Column(
@@ -74,16 +76,13 @@ class DetailScreen extends StatelessWidget {
                           ),
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 5.0)),
-                        Text(
-                          '|',
-                          style: TextStyle(
-                              fontSize: displayWidth(context) * 0.09,
-                              color: Colors.deepOrange),
-                        ),
+                        Container(
+                            height: 30,
+                            child: VerticalDivider(color: Colors.red)),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 3.0)),
                         RatingBar.builder(
                           ignoreGestures: true,
-                          itemSize: displayWidth(context) * 0.055,
+                          itemSize: displayWidth(context) * 0.045,
                           initialRating: restaurant.rating,
                           glowColor: Colors.transparent,
                           minRating: 1,
@@ -91,7 +90,7 @@ class DetailScreen extends StatelessWidget {
                           allowHalfRating: true,
                           itemCount: 5,
                           itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                          itemBuilder: (context, _) => Icon(
+                          itemBuilder: (_, __) => Icon(
                             Icons.star,
                             color: Colors.blue,
                           ),
@@ -143,7 +142,7 @@ class DetailScreen extends StatelessWidget {
                     Container(
                       alignment: Alignment.center,
                       child: Text(
-                        'Menus',
+                        'Menu',
                         style: TextStyle(
                             color: Colors.deepOrange,
                             fontSize: displayWidth(context) * 0.06,
@@ -170,12 +169,9 @@ class DetailScreen extends StatelessWidget {
                                         fontFamily: 'Helvetica'))),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5.0)),
-                            Text(
-                              '|',
-                              style: TextStyle(
-                                  fontSize: displayWidth(context) * 0.06,
-                                  color: Colors.white),
-                            ),
+                            Container(
+                                height: 40,
+                                child: VerticalDivider(color: Colors.white)),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 3.0)),
                             Expanded(
@@ -194,7 +190,8 @@ class DetailScreen extends StatelessWidget {
                             Expanded(
                                 child: ListView.builder(
                               shrinkWrap: true,
-                              itemCount: restaurant.menus.foods.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: restaurant.menu.foods.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Card(
                                     color: Colors.orange,
@@ -203,8 +200,7 @@ class DetailScreen extends StatelessWidget {
                                     child: Column(children: [
                                       Text(
                                           '- ' +
-                                              restaurant
-                                                  .menus.foods[index].name,
+                                              restaurant.menu.foods[index].name,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize:
@@ -218,7 +214,7 @@ class DetailScreen extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10.0),
                               shrinkWrap: true,
-                              itemCount: restaurant.menus.drinks.length,
+                              itemCount: restaurant.menu.drinks.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Card(
                                     color: Colors.deepOrange,
@@ -227,7 +223,7 @@ class DetailScreen extends StatelessWidget {
                                     child: Column(children: [
                                       Text(
                                         '- ' +
-                                            restaurant.menus.drinks[index].name,
+                                            restaurant.menu.drinks[index].name,
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize:
